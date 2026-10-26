@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+data/index/
+data/app.db
+data/app.db-*
+data/uploads/
+*.log
+.DS_Store
+node_modules/
+
+# Purchased/copyrighted prep material — do NOT commit to a public repo.
+# The app ships original primers + the user's own deal doc so a fresh clone still works;
+# drop your licensed guides into data/guides/ locally for full coverage.
+data/guides/Quick-Reference-Guides_*
+data/guides/400*
+data/guides/FIG-Questions.pdf
