@@ -124,8 +124,23 @@ RENDER.dashboard=async(c)=>{
      <button class="btn sm" onclick="location.hash='contacts'">Open</button></div>`).join("")
     :empty("No pending follow-ups","☎"));
   c.innerHTML=qa+readinessCard(d.readiness)+stats+`<div class="grid g2">${plan}${weak}</div><div class="spacer"></div>
-    <div class="grid g2">${events}${practice}</div><div class="spacer"></div><div class="grid g2">${deals}${foll}</div>`;
+    <div class="grid g2">${events}${practice}</div><div class="spacer"></div>${trendCard(d.performance_trend)}<div class="spacer"></div><div class="grid g2">${deals}${foll}</div>`;
 };
+function trendCard(trend){
+  const pts=(trend||[]).filter(p=>p.score!=null);
+  if(pts.length<2) return `<div class="card"><div class="hd"><h3>Performance trend</h3></div><div class="bd">${empty("Complete a few mock interviews to see your score trend","◆")}</div></div>`;
+  const w=680,h=120,pad=14;
+  const xs=i=>pad+i*((w-2*pad)/(pts.length-1));
+  const ys=s=>h-pad-(s/100)*(h-2*pad);
+  const path=pts.map((p,i)=>`${i?"L":"M"}${xs(i).toFixed(1)},${ys(p.score).toFixed(1)}`).join(" ");
+  const area=`M${xs(0).toFixed(1)},${(h-pad).toFixed(1)} `+pts.map((p,i)=>`L${xs(i).toFixed(1)},${ys(p.score).toFixed(1)}`).join(" ")+` L${xs(pts.length-1).toFixed(1)},${(h-pad).toFixed(1)} Z`;
+  const dots=pts.map((p,i)=>`<circle cx="${xs(i).toFixed(1)}" cy="${ys(p.score).toFixed(1)}" r="3.5" fill="#1f4e8c"/><text x="${xs(i).toFixed(1)}" y="${(ys(p.score)-8).toFixed(1)}" text-anchor="middle" font-size="10" fill="#667085">${p.score}</text>`).join("");
+  const avg=Math.round(pts.reduce((a,p)=>a+p.score,0)/pts.length), delta=pts[pts.length-1].score-pts[0].score;
+  return `<div class="card"><div class="hd"><h3>Performance trend</h3><span class="small muted">avg ${avg} · ${delta>=0?"+":""}${delta} since start · ${pts.length} sessions</span></div>
+    <div class="bd"><svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
+      <line x1="${pad}" y1="${ys(50)}" x2="${w-pad}" y2="${ys(50)}" stroke="#eef1f5"/>
+      <path d="${area}" fill="#e8f0f9"/><path d="${path}" fill="none" stroke="#1f4e8c" stroke-width="2.5" stroke-linejoin="round"/>${dots}</svg></div></div>`;
+}
 function readinessCard(r){
   if(!r) return "";
   const circ=2*Math.PI*52, off=circ*(1-r.score/100);
