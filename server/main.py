@@ -10,7 +10,6 @@ import time
 
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import config, db, orchestrator, rag, readiness, usage
@@ -288,9 +287,6 @@ def api_reset(r: ResetReq):
 
 
 # ---------------- static frontend ----------------
-app.mount("/assets", StaticFiles(directory=str(config.WEB_DIR / "assets")), name="assets")
-
-
 _NOCACHE = {"Cache-Control": "no-cache, no-store, must-revalidate"}
 
 
